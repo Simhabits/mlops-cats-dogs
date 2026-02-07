@@ -1,0 +1,6 @@
+outs:
+- md5: da6c9546f904545c5de6cebda8a6d5bc.dir
+  size: 228459385
+  nfiles: 10032
+  hash: md5
+  path: cats_dogs
