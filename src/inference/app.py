@@ -91,3 +91,10 @@ async def predict(file: UploadFile = File(...)):
         "latency_sec": latency,
         "request_count": request_count
     }
+
+# -----------------------
+# Entrypoint
+# -----------------------
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)
