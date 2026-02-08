@@ -25,7 +25,9 @@ jobs:
         pip install pytest
 
     - name: Run unit tests
-      run: pytest
+      run: |
+	export PYTHONPATH=$PYTHONPATH:$(pwd)/src
+	pytest
 
     - name: Build Docker image
       run: docker build -t cats-dogs-inference:ci .
