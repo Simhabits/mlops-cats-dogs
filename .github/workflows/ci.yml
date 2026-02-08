@@ -24,6 +24,11 @@ jobs:
         pip install -r requirements.txt
         pip install pytest
 
+    - name: Prepare model file
+      run: |
+        mkdir -p output
+        cp tests/assets/model.pt output/model.pt
+
     - name: Run unit tests
       run: |
         export PYTHONPATH=$PYTHONPATH:$(pwd)/src
