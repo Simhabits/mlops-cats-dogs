@@ -1,11 +1,14 @@
 name: CD Pipeline
 
 on:
-  push:
-    branches: [ main ]
+  workflow_run:
+    workflows: ["CI Pipeline"]   # must match the name in your ci.yml
+    types:
+      - completed
 
 jobs:
   deploy:
+    if: ${{ success() }}         # only run if CI passed
     runs-on: ubuntu-latest
 
     steps:
@@ -24,9 +27,23 @@ jobs:
         docker rm inference || true
         docker run -d -p 8000:8000 --name inference simhabits/cats-dogs:latest
 
+    - name: Wait for container
+      run: sleep 5
+
     - name: Smoke test
       run: |
-        curl --fail http://localhost:8000/health
+        # Retry health check up to 5 times
+        for i in {1..5}; do
+          curl --fail http://localhost:8000/health && break
+          echo "Retrying health check..."
+          sleep 3
+        done
+
+        # Prediction test
         curl --fail -X POST http://localhost:8000/predict \
           -H "Content-Type: multipart/form-data" \
           -F "file=@tests/assets/dog.4010.jpg"
+
+    - name: Debug logs
+      if: failure()
+      run: docker logs inference
