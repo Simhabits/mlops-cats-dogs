@@ -1,0 +1,7 @@
+version: "3.8"
+services:
+  cats-dogs-inference:
+    image: simhabits/cats-dogs:latest
+    ports:
+      - "8000:8000"
+    restart: always

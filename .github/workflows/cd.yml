@@ -1,0 +1,26 @@
+name: CD Pipeline
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Pull image
+      run: docker pull simhabits/cats-dogs:latest   # replace with your Docker Hub username/repo
+
+    - name: Deploy container
+      run: |
+        docker stop inference || true
+        docker rm inference || true
+        docker run -d -p 8000:8000 --name inference simhabits/cats-dogs:latest
+
+    - name: Smoke test
+      run: |
+        curl --fail http://localhost:8000/health
+        curl --fail -X POST http://localhost:8000/predict \
+          -H "Content-Type: multipart/form-data" \
+          -F "file=@tests/assets/dog.4010.jpg"
