@@ -14,13 +14,6 @@ transform = transforms.Compose([
     )
 ])
 
-def compute_pooling_dims(in_features: int, channels: int = 3):
-    """
-    Compute pooling dimensions to approximately match model input size.
-    """
-    spatial = int((in_features / channels) ** 0.5)
-    return spatial, spatial
-
 def preprocess_image(image: Image.Image, model=None) -> torch.Tensor:
     """
     Preprocess image to match model input features.
@@ -42,7 +35,8 @@ def preprocess_image(image: Image.Image, model=None) -> torch.Tensor:
             raise AttributeError("Model does not have 'fc' or 'classifier' attribute")
 
         # Compute pooling dimensions
-        h, w = compute_pooling_dims(in_features, channels=x.shape[1])
+        spatial = int((in_features / x.shape[1]) ** 0.5)
+        h, w = spatial, spatial
         x = F.adaptive_avg_pool2d(x, (h, w))
 
         flattened_size = x.view(x.size(0), -1).shape[1]
